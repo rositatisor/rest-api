@@ -41,11 +41,16 @@ class ItemController extends AbstractFOSRestController
      */
     public function postItem(Request $request, ValidatorInterface $validator): View
     {
+        $category = $this->getDoctrine()
+                ->getRepository(Category::class)
+                ->find($request->get('id'));
+
         $item = new Item;
         $item
             ->setName($request->get('name'))
             ->setValue($request->get('value'))
-            ->setQuality($request->get('quality'));
+            ->setQuality($request->get('quality'))
+            ->setCategory($category);
 
         $errors = $validator->validate($item);
         if (count($errors) > 0) {
