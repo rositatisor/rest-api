@@ -28,7 +28,6 @@ class CategoryController extends AbstractFOSRestController
             },
         ];
         $normalizer = [new ObjectNormalizer(null, null, null, null, null, null, $defaultContext)];
-
         $serializer = new Serializer($normalizer, $encoder);
 
         return $serializer->serialize($param, 'json');
@@ -104,6 +103,8 @@ class CategoryController extends AbstractFOSRestController
             $em = $this->getDoctrine()->getManager();
             $em->persist($category);
             $em->flush();
+        } else {
+            return View::create('Category does not exist.', Response::HTTP_BAD_REQUEST);
         }
 
         return View::create($this->returnNormalized($category), Response::HTTP_OK);
@@ -117,11 +118,17 @@ class CategoryController extends AbstractFOSRestController
     public function deleteCategory(Request $request)
     {
         $category = $this->getCategoryById($request);
-
+        
         if ($category) {
+            if ($category->getItems()->count() > 0) {
+                $message = 'Unable to delete "'.$category->getName().'" category, which has '.$category->getItems()->count().' items assigned.';
+                return View::create($message, Response::HTTP_BAD_REQUEST);
+            }
             $em = $this->getDoctrine()->getManager();
             $em->remove($category);
             $em->flush();
+        } else {
+            return View::create('Category does not exist.', Response::HTTP_BAD_REQUEST);
         }
 
         return View::create($this->returnNormalized($category), Response::HTTP_OK);

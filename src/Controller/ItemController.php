@@ -28,7 +28,6 @@ class ItemController extends AbstractFOSRestController
             },
         ];
         $normalizer = [new ObjectNormalizer(null, null, null, null, null, null, $defaultContext)];
-
         $serializer = new Serializer($normalizer, $encoder);
 
         return $serializer->serialize($param, 'json');
@@ -98,19 +97,37 @@ class ItemController extends AbstractFOSRestController
     }
 
     /**
+     * @Rest\Get("/items/category/{categoryId}")
+     * @return View
+     */
+    public function getItemsByCategoryId(Request $request): View
+    {
+        $items = $this->getDoctrine()
+            ->getRepository(Item::class)
+            ->findBy(['category' => $request->get('categoryId')]);
+
+        return View::create($this->returnNormalized($items), Response::HTTP_OK);
+    }
+
+    /**
      * @Rest\Put("/items/{id}")
      * @param Request $request
      * @return View
      */
     public function putItem(Request $request): View
     {
+        $category = $this->getDoctrine()
+                ->getRepository(Category::class)
+                ->find($request->get('id'));
+
         $item = $this->getItemById($request);
 
         if ($item) {
             $item
             ->setName($request->get('name'))
             ->setValue($request->get('value'))
-            ->setQuality($request->get('quality'));
+            ->setQuality($request->get('quality'))
+            ->setCategory($category);
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($item);
@@ -136,5 +153,27 @@ class ItemController extends AbstractFOSRestController
         }
 
         return View::create($this->returnNormalized($item), Response::HTTP_OK);
+    }
+
+    /**
+     * @Rest\Delete("/items/category/{categoryId}")
+     * @param Request $request
+     * @return View
+     */
+    public function deleteItemByCategory(Request $request)
+    {
+        $items = $this->getDoctrine()
+            ->getRepository(Item::class)
+            ->findBy(['category' => $request->get('categoryId')]);
+
+        if ($items) {
+            foreach ($items as $item) {
+                $em = $this->getDoctrine()->getManager();
+                $em->remove($item);
+                $em->flush();
+            }
+        }
+
+        return View::create($this->returnNormalized($items), Response::HTTP_OK);
     }
 }

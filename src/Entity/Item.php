@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ItemRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ItemRepository::class)
@@ -19,16 +20,31 @@ class Item
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Regex(
+     *     pattern="/_item$/",
+     *     match=true,
+     *     message="Name must end in prefix _item"
+     * )
      */
     private $name;
 
     /**
      * @ORM\Column(type="float")
+     * @Assert\Range(
+     *      min = 10,
+     *      max = 100,
+     *      notInRangeMessage = "Value must be between {{ min }} and {{ max }} to enter.",
+     * )
      */
     private $value;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\Range(
+     *      min = -10,
+     *      max = 50,
+     *      notInRangeMessage = "Quality must between {{ min }} and {{ max }} to enter.",
+     * )
      */
     private $quality;
 
