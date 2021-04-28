@@ -8,6 +8,7 @@ use FOS\RestBundle\View\View;
 
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,9 +21,15 @@ class CategoryController extends AbstractFOSRestController
 {
     private function returnNormalized($param)
     {
-        $encoders = [new JsonEncoder];
-        $normalizers = [new ObjectNormalizer];
-        $serializer = new Serializer($normalizers, $encoders);
+        $encoder = [new JsonEncoder()];
+        $defaultContext = [
+            AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
+                return $object->getName();
+            },
+        ];
+        $normalizer = [new ObjectNormalizer(null, null, null, null, null, null, $defaultContext)];
+
+        $serializer = new Serializer($normalizer, $encoder);
 
         return $serializer->serialize($param, 'json');
     }
@@ -30,7 +37,7 @@ class CategoryController extends AbstractFOSRestController
     private function getCategoryById(Request $request)
     {
         return $this->getDoctrine()
-                ->getRepository('App\Entity\Category')
+                ->getRepository(Category::class)
                 ->find($request->get('id'));
     }
 
@@ -76,7 +83,7 @@ class CategoryController extends AbstractFOSRestController
     public function getCategories(): View
     {
         $categories = $this->getDoctrine()
-            ->getRepository('App\Entity\Category')
+            ->getRepository(Category::class)
             ->findAll();
 
         return View::create($this->returnNormalized($categories), Response::HTTP_OK);
