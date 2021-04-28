@@ -4,7 +4,7 @@
 
 Gilded Rose API (application Proframming Interface) allow users to get Gilded Rose categories and items.
 
-### Methods
+### HTTPs requests
 
 | Verb   | Discription                               |
 | ------ | ----------------------------------------- |
@@ -15,11 +15,11 @@ Gilded Rose API (application Proframming Interface) allow users to get Gilded Ro
 
 ## Description of usual server Responses:
 
-- 200 `OK` - the request was successful;
+- 200 `OK` - the request was successful.
 - 400 `Bad Request` - the request could not be understood or was missing required parameters.
 - 405 `Method Not Allowed` - requested method is not supported for resource.
 
-## To start
+## **Where to start?**
 
 You can run the application locally:
 
@@ -27,28 +27,22 @@ You can run the application locally:
 $ php bin/console server:run
 ```
 
-## Category
+## **How to use?**
+
+## I. Category
 
 Represents Category details. The API allows you to create, read, update, and delete your categories.
 
-Category attributes:
+### 1) Category attributes:
 
-1. id (number): unique identifier.
-2. name (string): name of the category.
+- id (number): unique identifier.
+- name (string): name of the category.
 
-### Endpoints:
-
-[**GET** `/api/categories`](#Retrieve-all-categories)
-
-[**GET** `/api/categories/:id`](#Retrieve-specific-category)
-
-[**POST** `/api/categories`](#Create-a-category)
-
-[**PUT** `/api/categories/:id`](#Update-existing-category)
-
-[**DELETE** `/api/categories/:id`](#Delete-existing-category)
+### 2) Endpoints and how to use:
 
 ### Create a category
+
+**POST** `/api/categories`
 
 ```php
 $ch = curl_init();
@@ -57,12 +51,14 @@ curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 curl_setopt($ch, CURLOPT_HEADER, FALSE);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-curl_setopt($ch, CURLOPT_POSTFIELDS, 'name=Write a name'); // specify name
+curl_setopt($ch, CURLOPT_POSTFIELDS, 'name=Name'); // specify name
 $response = curl_exec($ch);
 curl_close($ch);
 ```
 
 ### Retrieve all categories
+
+**GET** `/api/categories`
 
 ```php
 $ch = curl_init();
@@ -74,7 +70,9 @@ $response = curl_exec($ch);
 curl_close($ch);
 ```
 
-### Retrieve specific category
+### Retrieve specific category with all items
+
+**GET** `/api/categories/:id`
 
 ```php
 $ch = curl_init();
@@ -87,6 +85,8 @@ curl_close($ch);
 ```
 
 ### Update existing category
+
+**PUT** `/api/categories/:id`
 
 ```php
 $ch = curl_init();
@@ -102,9 +102,118 @@ curl_close($ch);
 
 ### Delete existing category
 
+**DELETE** `/api/categories/:id`
+
 ```php
 $ch = curl_init();
 $url = 'http://127.0.0.1:8000/api/categories/id'; //specify id
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+curl_setopt($ch, CURLOPT_HEADER, FALSE);
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+$response = curl_exec($ch);
+curl_close($ch);
+```
+
+## II. Item
+
+Represents Item details. The API allows you to create, read, update, and delete your items.
+
+### 1) Item attributes:
+
+- id (number): unique identifier.
+- name (string): name of the item.
+- value (float): value of the item.
+- quality (integer): quality of the item.
+- category (object): id of the related Category.
+
+### 2) Endpoints and how to use:
+
+### Create a item
+
+**POST** `/api/items`
+
+```php
+$ch = curl_init();
+$url = 'http://127.0.0.1:8000/api/items';
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+curl_setopt($ch, CURLOPT_HEADER, FALSE);
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+// specify parameters: name, value, quality and categoryId
+$params = 'name=Name_item&value=X&quality=X&id=id';
+curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+$response = curl_exec($ch);
+curl_close($ch);
+```
+
+### Retrieve all items
+
+**GET** `/api/items`
+
+```php
+$ch = curl_init();
+$url = 'http://127.0.0.1:8000/api/items';
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+curl_setopt($ch, CURLOPT_HEADER, FALSE);
+$response = curl_exec($ch);
+curl_close($ch);
+```
+
+### Retrieve specific item
+
+**GET** `/api/items/:id`
+
+```php
+$ch = curl_init();
+$url = 'http://127.0.0.1:8000/api/items/id'; // specify id number
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+curl_setopt($ch, CURLOPT_HEADER, FALSE);
+$response = curl_exec($ch);
+curl_close($ch);
+```
+
+### Update existing item
+
+**PUT** `/api/items/:id`
+
+```php
+$ch = curl_init();
+$url = 'http://127.0.0.1:8000/api/items/id'; //specify id number
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+curl_setopt($ch, CURLOPT_HEADER, FALSE);
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+// specify new parameters: name, value, quality and categoryId
+$params = 'name=Name_item&value=X&quality=X&id=20';
+curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+curl_close($ch);
+```
+
+### Delete existing item
+
+**DELETE** `/api/items/:id`
+
+```php
+$ch = curl_init();
+$url = 'http://127.0.0.1:8000/api/items/id'; //specify id
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+curl_setopt($ch, CURLOPT_HEADER, FALSE);
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+$response = curl_exec($ch);
+curl_close($ch);
+```
+
+### Delete all items based on category
+
+**DELETE** `/api/items/category/:id`
+
+```php
+$ch = curl_init();
+$url = 'http://127.0.0.1:8000/api/items/category/id'; //specify id
 curl_setopt($ch, CURLOPT_URL, $url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 curl_setopt($ch, CURLOPT_HEADER, FALSE);
