@@ -114,7 +114,7 @@ class ItemController extends AbstractFOSRestController
      * @param Request $request
      * @return View
      */
-    public function putItem(Request $request): View
+    public function putItem(Request $request, ValidatorInterface $validator): View
     {
         $category = $this->getDoctrine()
                 ->getRepository(Category::class)
@@ -124,14 +124,24 @@ class ItemController extends AbstractFOSRestController
 
         if ($item) {
             $item
-            ->setName($request->get('name'))
-            ->setValue($request->get('value'))
-            ->setQuality($request->get('quality'))
-            ->setCategory($category);
+                ->setName($request->get('name'))
+                ->setValue($request->get('value'))
+                ->setQuality($request->get('quality'))
+                ->setCategory($category);
+            
+            $errors = $validator->validate($item);
+            if (count($errors) > 0) {
+                foreach ($errors as $error) {
+                    return View::create($error->getMessage(), Response::HTTP_BAD_REQUEST);
+                }
+            }
 
             $em = $this->getDoctrine()->getManager();
             $em->persist($item);
             $em->flush();
+
+        } else {
+            return View::create('Category does not exist.', Response::HTTP_BAD_REQUEST);
         }
 
         return View::create($this->returnNormalized($item), Response::HTTP_OK);

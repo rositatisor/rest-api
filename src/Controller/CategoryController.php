@@ -100,6 +100,13 @@ class CategoryController extends AbstractFOSRestController
         if ($category) {
             $category->setName($request->get('name'));
 
+            $errors = $validator->validate($category);
+            if (count($errors) > 0) {
+                foreach ($errors as $error) {
+                    return View::create($error->getMessage(), Response::HTTP_BAD_REQUEST);
+                }
+            }
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($category);
             $em->flush();
