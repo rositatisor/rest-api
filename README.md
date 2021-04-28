@@ -2,7 +2,7 @@
 
 ## Getting started
 
-Gilded Rose API (application Proframming Interface) allow users to get Gilded Rose categories and items.
+Gilded Rose API (Application Proframming Interface) allow users to get Gilded Rose categories and items.
 
 ### HTTPs requests
 
